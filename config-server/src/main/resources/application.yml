@@ -2,12 +2,14 @@ server:
   port: 8888
 spring:
   application:
-    name: erudio-config-server
+    name: config-server
   cloud:
     config:
       server:
         git:
           uri: https://github.com/murilonerdx/config-server-cloud
+          #username: username
+          #password: password
           default-label: master
           search-paths:
             - 'greeting-service*'
