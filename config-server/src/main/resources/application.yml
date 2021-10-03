@@ -7,9 +7,9 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/murilonerdx/config-server-cloud
+          uri: https://github.com/leandrocgsi/erudio-config-server
           #username: username
           #password: password
-          default-label: master
+          default-label: main
           search-paths:
             - 'greeting-service*'
