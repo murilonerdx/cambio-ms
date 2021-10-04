@@ -1,6 +1,7 @@
 package com.murilonerdx.bookservice.controller;
 
 import com.murilonerdx.bookservice.model.Book;
+import com.murilonerdx.bookservice.proxy.CambioProxy;
 import com.murilonerdx.bookservice.repository.BookRepository;
 import com.murilonerdx.bookservice.response.Cambio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class BookController {
     @Autowired
     public Environment environment;
 
+    @Autowired
+    private CambioProxy proxy;
+
     @GetMapping(value="/{id}/{currency}")
     public Book findBook(
         @PathVariable("id") Long id,
@@ -38,6 +42,24 @@ public class BookController {
         params.put("to",currency);
         ResponseEntity<Cambio> response = new RestTemplate().getForEntity("http://localhost:8000/cambio-service/{amount}" +
                 "/{from}/{to}", Cambio.class, params);
+
+        Cambio cambio = response.getBody();
+        String port = environment.getProperty("server.port");
+        book.setEnvironment(port);
+        book.setPrice(cambio.getConvertedValue());
+        return book;
+    }
+
+
+    @GetMapping(value="/{id}/{currency}")
+    public Book findBook(
+            @PathVariable("id") Long id,
+            @PathVariable("currency") String currency
+    ){
+        Book book = repository.getById(id);
+        if(book == null) throw new RuntimeException("Book id "+ id + "not found");
+
+        Cambio cambio = proxy.getCambio(book.getPrice(),"USD",currency);
 
         Cambio cambio = response.getBody();
         String port = environment.getProperty("server.port");
