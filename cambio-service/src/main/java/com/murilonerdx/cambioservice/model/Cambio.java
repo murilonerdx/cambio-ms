@@ -25,7 +25,7 @@ public class Cambio {
     private BigDecimal conversionFactor;
 
     @Transient
-    private BigDecimal convertValue;
+    private BigDecimal convertedValue;
 
     @Transient
     private String environment;
