@@ -52,7 +52,7 @@ public class BookController {
 
 
     @GetMapping(value="/{id}/{currency}")
-    public Book findBook(
+    public Book getCambio(
             @PathVariable("id") Long id,
             @PathVariable("currency") String currency
     ){
@@ -61,7 +61,6 @@ public class BookController {
 
         Cambio cambio = proxy.getCambio(book.getPrice(),"USD",currency);
 
-        Cambio cambio = response.getBody();
         String port = environment.getProperty("server.port");
         book.setEnvironment(port);
         book.setPrice(cambio.getConvertedValue());
