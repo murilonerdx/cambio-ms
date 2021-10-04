@@ -20,50 +20,30 @@ import java.util.HashMap;
 public class BookController {
 
     @Autowired
-    private BookRepository repository;
+    private Environment environment;
 
     @Autowired
-    public Environment environment;
+    private BookRepository repository;
 
     @Autowired
     private CambioProxy proxy;
 
-    @GetMapping(value="/{id}/{currency}")
+    @GetMapping(value = "/{id}/{currency}")
     public Book findBook(
-        @PathVariable("id") Long id,
-        @PathVariable("currency") String currency
-    ){
-        Book book = repository.getById(id);
-        if(book == null) throw new RuntimeException("Book id "+ id + "not found");
-
-        HashMap<String, String> params = new HashMap<>();
-        params.put("amount",book.getPrice().toString());
-        params.put("from","USD");
-        params.put("to",currency);
-        ResponseEntity<Cambio> response = new RestTemplate().getForEntity("http://localhost:8000/cambio-service/{amount}" +
-                "/{from}/{to}", Cambio.class, params);
-
-        Cambio cambio = response.getBody();
-        String port = environment.getProperty("server.port");
-        book.setEnvironment(port);
-        book.setPrice(cambio.getConvertedValue());
-        return book;
-    }
-
-
-    @GetMapping(value="/{id}/{currency}")
-    public Book getCambio(
             @PathVariable("id") Long id,
             @PathVariable("currency") String currency
-    ){
-        Book book = repository.getById(id);
-        if(book == null) throw new RuntimeException("Book id "+ id + "not found");
+    ) {
 
-        Cambio cambio = proxy.getCambio(book.getPrice(),"USD",currency);
+        var book = repository.getById(id);
+        if (book == null) throw new RuntimeException("Book not Found");
 
-        String port = environment.getProperty("server.port");
-        book.setEnvironment(port);
+        var cambio = proxy.getCambio(book.getPrice(), "USD", currency);
+
+        var port = environment.getProperty("local.server.port");
+        book.setEnvironment(port + " FEIGN");
         book.setPrice(cambio.getConvertedValue());
         return book;
     }
+
+
 }
