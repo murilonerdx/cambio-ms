@@ -1,5 +1,6 @@
 package com.murilonerdx.bookservice.controller;
 
+import com.murilonerdx.bookservice.exception.NotFoundBook;
 import com.murilonerdx.bookservice.model.Book;
 import com.murilonerdx.bookservice.proxy.CambioProxy;
 import com.murilonerdx.bookservice.repository.BookRepository;
@@ -33,16 +34,22 @@ public class BookController {
             @PathVariable("id") Long id,
             @PathVariable("currency") String currency
     ) {
+        try{
+            var book = repository.getById(id);
+            if (book == null) throw new RuntimeException("Book not Found");
 
-        var book = repository.getById(id);
-        if (book == null) throw new RuntimeException("Book not Found");
+            var cambio = proxy.getCambio(book.getPrice(), "USD", currency);
 
-        var cambio = proxy.getCambio(book.getPrice(), "USD", currency);
+            var port = environment.getProperty("local.server.port");
+            book.setEnvironment("Book port: " + port + " Cambio port: " +cambio.getEnvironment());
+            book.setPrice(cambio.getConvertedValue());
 
-        var port = environment.getProperty("local.server.port");
-        book.setEnvironment("Book port: " + port + " Cambio port: " +cambio.getEnvironment());
-        book.setPrice(cambio.getConvertedValue());
-        return book;
+            return book;
+        }catch(RuntimeException e){
+            throw new NotFoundBook("Book not found");
+        }
+
+
     }
 
 
