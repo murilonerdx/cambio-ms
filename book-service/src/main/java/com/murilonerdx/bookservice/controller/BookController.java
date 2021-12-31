@@ -5,6 +5,8 @@ import com.murilonerdx.bookservice.model.Book;
 import com.murilonerdx.bookservice.proxy.CambioProxy;
 import com.murilonerdx.bookservice.repository.BookRepository;
 import com.murilonerdx.bookservice.response.Cambio;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 
+@Tag(name="Book endpoint")
 @RestController
 @RequestMapping("book-service")
 public class BookController {
@@ -29,6 +32,7 @@ public class BookController {
     @Autowired
     private CambioProxy proxy;
 
+    @Operation(summary="Find a specific book your by ID")
     @GetMapping(value = "/{id}/{currency}")
     public Book findBook(
             @PathVariable("id") Long id,

@@ -1,0 +1,11 @@
+server:
+  port: 8100
+spring:
+  application:
+    name: book-service
+resilience4j:
+  ratelimiter:
+    instances:
+      default:
+        limit-for-period: 2
+        limit-refresh-period: 10s
