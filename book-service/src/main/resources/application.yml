@@ -3,6 +3,10 @@ server:
 spring:
   application:
     name: book-service
+springdoc:
+  show-actuator: true
+  api-docs:
+    path: book-service/v3/api-docs
 resilience4j:
   ratelimiter:
     instances:
